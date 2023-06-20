@@ -155,11 +155,11 @@ public class SwiftFlutterPlatformAlertPlugin: NSObject, FlutterPlugin {
             let text = args["text"] as? String ?? ""
 
             var actions = [UIAlertAction]()
-            if let positiveButton = args["positiveButtonTitle"] as? String,
-               positiveButton.isEmpty == false {
-                let buttonStyle = style(forButtonTitle: positiveButton)
-                actions.append(UIAlertAction(title: positiveButton, style: buttonStyle) { action in
-                    result(CustomAlertButton.positiveButton.rawValue)
+            if let negativeButton = args["negativeButtonTitle"] as? String,
+               negativeButton.isEmpty == false {
+                let buttonStyle = style(forButtonTitle: negativeButton)
+                actions.append(UIAlertAction(title: negativeButton, style: buttonStyle) { action in
+                    result(CustomAlertButton.negativeButton.rawValue)
                 })
             }
             if let neutralButton = args["neutralButtonTitle"] as? String,
@@ -169,11 +169,11 @@ public class SwiftFlutterPlatformAlertPlugin: NSObject, FlutterPlugin {
                     result(CustomAlertButton.neutralButton.rawValue)
                 })
             }
-            if let negativeButton = args["negativeButtonTitle"] as? String,
-               negativeButton.isEmpty == false {
-                let buttonStyle = style(forButtonTitle: negativeButton)
-                actions.append(UIAlertAction(title: negativeButton, style: buttonStyle) { action in
-                    result(CustomAlertButton.negativeButton.rawValue)
+            if let positiveButton = args["positiveButtonTitle"] as? String,
+               positiveButton.isEmpty == false {
+                let buttonStyle = style(forButtonTitle: positiveButton)
+                actions.append(UIAlertAction(title: positiveButton, style: buttonStyle) { action in
+                    result(CustomAlertButton.positiveButton.rawValue)
                 })
             }
             let preferredStyle: UIAlertController.Style  = .alert
