@@ -90,7 +90,10 @@ fileprivate enum FlutterPlatformIconStyle: String {
     case hand
 }
 
-public class SwiftFlutterPlatformAlertPlugin: NSObject, FlutterPlugin {
+public class SwiftFlutterPlatformAlertPlugin: NSObject, FlutterPlugin, UIGestureRecognizerDelegate {
+    var isDismissible = true
+    lazy var alertController = UIAlertController()
+
     public static func register(with registrar: FlutterPluginRegistrar) {
         let channel = FlutterMethodChannel(name: "flutter_platform_alert", binaryMessenger: registrar.messenger())
         let instance = SwiftFlutterPlatformAlertPlugin()
@@ -98,7 +101,6 @@ public class SwiftFlutterPlatformAlertPlugin: NSObject, FlutterPlugin {
     }
 
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
-
         func style(forButtonTitle button:String) -> UIAlertAction.Style {
            switch button {
            case NSLocalizedString("Cancel", comment: ""):
@@ -115,6 +117,7 @@ public class SwiftFlutterPlatformAlertPlugin: NSObject, FlutterPlugin {
             let systemSoundID: SystemSoundID = 4095
             AudioServicesPlaySystemSound(systemSoundID)
             result(true)
+
         case "showAlert":
             guard let root = UIApplication.shared.windows.first?.rootViewController else {
                 result(FlutterError(code: "-101", message: "No root view", details: "The root view is nil"))
@@ -124,13 +127,15 @@ public class SwiftFlutterPlatformAlertPlugin: NSObject, FlutterPlugin {
                 result(FlutterError(code: "-100", message: "No arguments", details: "The arguments object is nil"))
                 return
             }
+
+            isDismissible = args["isDismissible"] as? Bool ?? true
             let windowTitle = args["windowTitle"] as? String ?? ""
             let text = args["text"] as? String ?? ""
             let alertStyleString = args["alertStyle"] as? String ?? ""
             let alertStyle = FlutterPlatformAlertStyle(rawValue: alertStyleString) ?? FlutterPlatformAlertStyle.ok
             let buttons = alertStyle.buttons
-            let preferredStyle: UIAlertController.Style  = .alert
-            let controller = UIAlertController(title: windowTitle, message: text, preferredStyle: preferredStyle)
+
+            alertController = UIAlertController(title: windowTitle, message: text, preferredStyle: .alert)
             for i in 0..<buttons.count {
                 let button = buttons[i]
                 let buttonStyle = style(forButtonTitle: button)
@@ -138,9 +143,27 @@ public class SwiftFlutterPlatformAlertPlugin: NSObject, FlutterPlugin {
                     let actionResult = alertStyle.button(at: i)
                     result(actionResult.rawValue)
                 }
-                controller.addAction(action)
+                alertController.addAction(action)
             }
-            root.present(controller, animated: true)
+            root.present(alertController, animated: true) { [weak self] in
+                if let self,
+                   let window = UIApplication.shared.windows.filter({ $0.isKeyWindow }).first,
+                   let subviews = window.subviews.last?.subviews {
+                    let backdropView = subviews[1]
+                    backdropView.isUserInteractionEnabled = true
+
+                    let button = UIButton(type: .custom)
+                    backdropView.addSubview(button)
+                    button.addTarget(self, action: #selector(self.handleDismiss(sender:)), for: .touchUpInside)
+                    button.translatesAutoresizingMaskIntoConstraints = false
+                    NSLayoutConstraint.activate([
+                        button.leftAnchor.constraint(equalTo: window.leftAnchor),
+                        button.rightAnchor.constraint(equalTo: window.rightAnchor),
+                        button.topAnchor.constraint(equalTo: window.topAnchor),
+                        button.bottomAnchor.constraint(equalTo: window.bottomAnchor),
+                    ])
+                }
+            }
 
         case "showCustomAlert":
             guard let root = UIApplication.shared.windows.first?.rootViewController else {
@@ -151,6 +174,8 @@ public class SwiftFlutterPlatformAlertPlugin: NSObject, FlutterPlugin {
                 result(FlutterError(code: "-100", message: "No arguments", details: "The arguments object is nil"))
                 return
             }
+
+            isDismissible = args["isDismissible"] as? Bool ?? true
             let windowTitle = args["windowTitle"] as? String ?? ""
             let text = args["text"] as? String ?? ""
 
@@ -177,15 +202,43 @@ public class SwiftFlutterPlatformAlertPlugin: NSObject, FlutterPlugin {
                 })
             }
             let preferredStyle: UIAlertController.Style  = .alert
-            let controller = UIAlertController(title: windowTitle, message: text, preferredStyle: preferredStyle)
+            alertController = UIAlertController(title: windowTitle, message: text, preferredStyle: preferredStyle)
+
             for action in actions {
-                controller.addAction(action)
+                alertController.addAction(action)
             }
-            root.present(controller, animated: true)
+            root.present(alertController, animated: true) { [weak self] in
+                if let self,
+                   let window = UIApplication.shared.windows.filter({ $0.isKeyWindow }).first,
+                   let subviews = window.subviews.last?.subviews {
+                    let backdropView = subviews[1]
+                    backdropView.isUserInteractionEnabled = true
+
+                    let button = UIButton(type: .custom)
+                    backdropView.addSubview(button)
+                    button.addTarget(self, action: #selector(self.handleDismiss(sender:)), for: .touchUpInside)
+                    button.translatesAutoresizingMaskIntoConstraints = false
+                    NSLayoutConstraint.activate([
+                        button.leftAnchor.constraint(equalTo: window.leftAnchor),
+                        button.rightAnchor.constraint(equalTo: window.rightAnchor),
+                        button.topAnchor.constraint(equalTo: window.topAnchor),
+                        button.bottomAnchor.constraint(equalTo: window.bottomAnchor),
+                    ])
+                }
+            }
+
 
         default:
             result(FlutterMethodNotImplemented)
         }
 
     }
+
+    @objc
+    private func handleDismiss(sender: Any) {
+        if isDismissible {
+            alertController.dismiss(animated: true)
+        }
+    }
 }
+
