@@ -98,6 +98,7 @@ class FlutterPlatformAlert {
     IconStyle iconStyle = IconStyle.none,
     FlutterPlatformAlertOption? options,
     AlertWindowPosition windowPosition = AlertWindowPosition.parentWindowCenter,
+    bool isDismissible = true,
   }) async {
     final alertStyleString = alertStyle.stringValue;
     final iconStyleString = iconStyle.stringValue;
@@ -109,6 +110,7 @@ class FlutterPlatformAlert {
       'preferMessageBox': options?.preferMessageBoxOnWindows ?? false,
       'additionalWindowTitle': options?.additionalWindowTitleOnWindows ?? '',
       'position': positionToInt(windowPosition),
+      'isDismissible': isDismissible,
     });
     return AlertButtonHelper.fromString(result);
   }
@@ -153,6 +155,7 @@ class FlutterPlatformAlert {
     FlutterPlatformAlertOption? options,
     AlertWindowPosition windowPosition = AlertWindowPosition.parentWindowCenter,
     String? iconPath = '',
+    bool isDismissible = true,
   }) async {
     final iconStyleString = iconStyle.stringValue;
 
@@ -186,6 +189,7 @@ class FlutterPlatformAlert {
       'position': positionToInt(windowPosition),
       'iconPath': exactIconPath,
       'base64Icon': base64Icon,
+      'isDismissible': isDismissible,
     });
     return CustomButtonHelper.fromString(result);
   }
