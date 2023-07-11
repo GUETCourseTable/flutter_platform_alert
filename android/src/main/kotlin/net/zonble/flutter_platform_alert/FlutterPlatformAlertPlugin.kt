@@ -139,15 +139,7 @@ class FlutterPlatformAlertPlugin : FlutterPlugin, MethodCallHandler, ActivityAwa
             .apply {
               setOnDismissListener {
                 if (!hasReturned) {
-                  when (alertStyle) {
-                    "abortRetryIgnore" -> result.success("ignore")
-                    "cancelTryContinue" -> result.success("cancel")
-                    "okCancel" -> result.success("cancel")
-                    "retryCancel" -> result.success("cancel")
-                    "yesNoCancel" -> result.success("cancel")
-                    "yesNo" -> result.success("no")
-                    else -> result.success("ok")
-                  }
+                  result.success("other")
                 }
               }
             }

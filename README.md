@@ -1,3 +1,7 @@
+# ⚠️注意
+此 package 经过魔改，增加了移动端控制是否可以点击背景来 dismiss 弹窗的功能。
+由于 UIAlertController 的 UI 层级是私有的，iOS 侧实现此功能使用了不稳定的方法来寻找 backdrop view，因此不要将这个改动合并到上游。
+
 # flutter_platform_alert
 
 2021 and onwards © Weizhong Yang a.k.a zonble.

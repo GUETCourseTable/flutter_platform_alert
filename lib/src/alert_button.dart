@@ -27,7 +27,7 @@ enum AlertButton {
   /// The "yes" button.
   yesButton,
 
-  /// Other unknown button.
+  /// Other unknown button, or dialog dismissal case.
   other,
 }
 
@@ -42,6 +42,6 @@ enum CustomButton {
   /// The neutral button.
   neutralButton,
 
-  /// Other unknown button.
+  /// Other unknown button, or dialog dismissal case.
   other,
 }
