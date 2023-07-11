@@ -75,6 +75,9 @@ class FlutterPlatformAlert {
   /// dialog/alert. Once a user click on one of the button on it, the method
   /// returns the name of the button.
   ///
+  /// When [isDismissible] sets to true, user can tap on the backdrop to dismiss
+  /// the dialog. Which will return as "other" button type.
+  ///
   /// Using the API is much like calling
   /// [MessageBox](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-messagebox)
   /// API on Windows. You cannot change the title of the buttons on the dialog
@@ -93,8 +96,7 @@ class FlutterPlatformAlert {
   /// play alert sounds and you don't need to call [playAlertSound] again.
   ///
   /// ⚠️The option [isDismissible] only works on Android & iOS, and will be
-  /// ignored on other platforms. When it sets to true, user can tap on the
-  /// backdrop to dismiss the dialog.
+  /// ignored on other platforms.
   static Future<AlertButton> showAlert({
     required String windowTitle,
     required String text,
@@ -130,6 +132,9 @@ class FlutterPlatformAlert {
   /// [neutralButtonTitle] is for other buttons. Once you leave the title of the
   /// button empty, the button will not be shown.
   ///
+  /// When [isDismissible] sets to true, user can tap on the backdrop to dismiss
+  /// the dialog. Which will return as "other" button type.
+  ///
   /// You can also specify an icon by assigning the [iconPath] parameter. The
   /// parameter works on Android, Windows, macOS and Linux (iOS is not
   /// supported). The path should be as the path of an asset in your Flutter
@@ -150,8 +155,7 @@ class FlutterPlatformAlert {
   /// ⚠️Please note that we only support ICO files on Windows.
   ///
   /// ⚠️The option [isDismissible] only works on Android & iOS, and will be
-  /// ignored on other platforms. When it sets to true, user can tap on the
-  /// backdrop to dismiss the dialog.
+  /// ignored on other platforms.
   static Future<CustomButton> showCustomAlert({
     required String windowTitle,
     required String text,
