@@ -75,6 +75,9 @@ class FlutterPlatformAlert {
   /// dialog/alert. Once a user click on one of the button on it, the method
   /// returns the name of the button.
   ///
+  /// When [isDismissible] sets to true, user can tap on the backdrop to dismiss
+  /// the dialog. Which will return as "other" button type.
+  ///
   /// Using the API is much like calling
   /// [MessageBox](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-messagebox)
   /// API on Windows. You cannot change the title of the buttons on the dialog
@@ -82,15 +85,18 @@ class FlutterPlatformAlert {
   /// want to customize the buttons, you can use
   /// [FlutterPlatformAlert.showCustomAlert] instead.
   ///
-  /// Please note that [iconStyle] is not implemented on mobile platforms like
-  /// iOS and Android. On Windows, setting [iconStyle] also makes the system to
-  /// play alert sounds and you don't need to call [playAlertSound] again.
-  ///
   /// On windows, you can pick one of two implementation. One is using
   /// MessageBox while another is using
   /// [TaskDialogIndirect](https://docs.microsoft.com/en-us/windows/win32/api/commctrl/nf-commctrl-taskdialogindirect).
   /// You can do this by assigning the [options] parameter. See more details by
   /// visiting [FlutterPlatformAlertOption].
+  ///
+  /// ⚠️Please note that [iconStyle] is not implemented on mobile platforms like
+  /// iOS and Android. On Windows, setting [iconStyle] also makes the system to
+  /// play alert sounds and you don't need to call [playAlertSound] again.
+  ///
+  /// ⚠️The option [isDismissible] only works on Android & iOS, and will be
+  /// ignored on other platforms.
   static Future<AlertButton> showAlert({
     required String windowTitle,
     required String text,
@@ -98,6 +104,7 @@ class FlutterPlatformAlert {
     IconStyle iconStyle = IconStyle.none,
     FlutterPlatformAlertOption? options,
     AlertWindowPosition windowPosition = AlertWindowPosition.parentWindowCenter,
+    bool isDismissible = true,
   }) async {
     final alertStyleString = alertStyle.stringValue;
     final iconStyleString = iconStyle.stringValue;
@@ -109,6 +116,7 @@ class FlutterPlatformAlert {
       'preferMessageBox': options?.preferMessageBoxOnWindows ?? false,
       'additionalWindowTitle': options?.additionalWindowTitleOnWindows ?? '',
       'position': positionToInt(windowPosition),
+      'isDismissible': isDismissible,
     });
     return AlertButtonHelper.fromString(result);
   }
@@ -124,6 +132,9 @@ class FlutterPlatformAlert {
   /// [neutralButtonTitle] is for other buttons. Once you leave the title of the
   /// button empty, the button will not be shown.
   ///
+  /// When [isDismissible] sets to true, user can tap on the backdrop to dismiss
+  /// the dialog. Which will return as "other" button type.
+  ///
   /// You can also specify an icon by assigning the [iconPath] parameter. The
   /// parameter works on Android, Windows, macOS and Linux (iOS is not
   /// supported). The path should be as the path of an asset in your Flutter
@@ -136,13 +147,15 @@ class FlutterPlatformAlert {
   /// You should just pass 'images/tray_icon_original.png' to the [iconPath]
   /// parameter.
   ///
-  /// Please note that we only support ICO files on Windows.
-  ///
   /// On Windows, the API always call
   /// [TaskDialogIndirect](https://docs.microsoft.com/en-us/windows/win32/api/commctrl/nf-commctrl-taskdialogindirect)
   /// even you set the [FlutterPlatformAlertOption.preferMessageBoxOnWindows]
   /// property in the [options] parameter to true.
   ///
+  /// ⚠️Please note that we only support ICO files on Windows.
+  ///
+  /// ⚠️The option [isDismissible] only works on Android & iOS, and will be
+  /// ignored on other platforms.
   static Future<CustomButton> showCustomAlert({
     required String windowTitle,
     required String text,
@@ -153,6 +166,7 @@ class FlutterPlatformAlert {
     FlutterPlatformAlertOption? options,
     AlertWindowPosition windowPosition = AlertWindowPosition.parentWindowCenter,
     String? iconPath = '',
+    bool isDismissible = true,
   }) async {
     final iconStyleString = iconStyle.stringValue;
 
@@ -186,6 +200,7 @@ class FlutterPlatformAlert {
       'position': positionToInt(windowPosition),
       'iconPath': exactIconPath,
       'base64Icon': base64Icon,
+      'isDismissible': isDismissible,
     });
     return CustomButtonHelper.fromString(result);
   }
